@@ -11,7 +11,8 @@ import "encoding/base64"
 import "encoding/hex"
 import "crypto/sha256"
 import "crypto/hmac"
-import "github.com/garyburd/redigo/redis"
+
+// import "github.com/garyburd/redigo/redis"
 
 import "encoding/json"
 
@@ -112,7 +113,7 @@ func StsToken_v2(c *gin.Context) {
 				tokens := BASE64EncodeStr(tmp)
 
 				if tokens == jsons.Token {
-					toks := Redis_()
+					toks := "ok" //Redis_()
 					data["result"] = "0"
 					data["msg"] = "success"
 					data["info"] = toks
@@ -157,7 +158,7 @@ func StsToken(c *gin.Context) {
 		tokens := BASE64EncodeStr(tmp)
 
 		if tokens == jsons.Token {
-			toks := Redis_()
+			toks := "ok"  //Redis_()
 			apimsg = toks //"验证通过"
 			apicode = 0
 			data = "success"
@@ -177,6 +178,12 @@ func StsToken(c *gin.Context) {
 func ApiTest(c *gin.Context) {
 	times := time.Now()
 	c.JSON(http.StatusOK, ApiResource(0, times, "success"))
+}
+
+type Response struct {
+	Code int
+	Msg  string
+	Data string
 }
 
 func run() {
@@ -208,35 +215,36 @@ func run() {
 	}
 	//定义默认路由
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, gin.H{
-			"status": 404,
-			"error":  "404, page not exists!",
-		})
+		// c.JSON(http.StatusNotFound, gin.H{
+		// 	"status": 404,
+		// 	"error":  "404, page not exists!",
+		// })
+		c.JSON(http.StatusOK, Response{200, "success gin", "ok"})
 	})
 	r.Run(":80")
 }
 
-func Redis_() string {
-	conn, err := redis.Dial("tcp", "192.168.248.126:6379")
-	if err != nil {
-		// fmt.Println("connect redis error :", err)
-		return "connect redis error"
-	}
-	defer conn.Close()
-	name, err := redis.String(conn.Do("GET", "name"))
-	if err != nil {
-	}
-	if len(name) > 0 {
+// func Redis_() string {
+// 	conn, err := redis.Dial("tcp", "192.168.248.126:6379")
+// 	if err != nil {
+// 		// fmt.Println("connect redis error :", err)
+// 		return "connect redis error"
+// 	}
+// 	defer conn.Close()
+// 	name, err := redis.String(conn.Do("GET", "name"))
+// 	if err != nil {
+// 	}
+// 	if len(name) > 0 {
 
-	} else {
-		times := strconv.FormatInt(time.Now().Unix(), 10)
-		conn.Do("SET", "name", times)
-		conn.Do("expire", "name", 5)
-		fmt.Println("set redis")
-		name = times
-	}
-	return name
-}
+// 	} else {
+// 		times := strconv.FormatInt(time.Now().Unix(), 10)
+// 		conn.Do("SET", "name", times)
+// 		conn.Do("expire", "name", 5)
+// 		fmt.Println("set redis")
+// 		name = times
+// 	}
+// 	return name
+// }
 
 func main() {
 	run()

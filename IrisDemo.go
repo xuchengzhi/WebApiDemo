@@ -1,6 +1,6 @@
 package main
 
-import "fmt"
+// import "fmt"
 import "github.com/kataras/iris"
 import "strconv"
 import "time"
@@ -8,7 +8,8 @@ import "encoding/base64"
 import "encoding/hex"
 import "crypto/sha256"
 import "crypto/hmac"
-import "github.com/garyburd/redigo/redis"
+
+// import "github.com/garyburd/redigo/redis"
 import "log"
 
 // import "os"
@@ -72,9 +73,9 @@ func ApiResource(status int, objects interface{}, msg string) (apijson *ApiJson)
 }
 
 func test(ctx iris.Context) {
-	msg := strconv.FormatInt(time.Now().Unix(), 10)
+	// msg := strconv.FormatInt(time.Now().Unix(), 10)
 	ctx.StatusCode(iris.StatusOK)
-	ctx.JSON(ApiResource(0, msg, "ok"))
+	ctx.JSON(ApiResource(200, "success lrls", "ok"))
 }
 
 type StsJson struct {
@@ -115,7 +116,7 @@ func StsToken_v2(ctx iris.Context) {
 				tokens := BASE64EncodeStr(tmp)
 
 				if tokens == jsons.Token {
-					toks := Redis_()
+					toks := "ok" //Redis_()
 					data["result"] = "0"
 					data["msg"] = "success"
 					data["info"] = toks
@@ -160,7 +161,7 @@ func StsToken(ctx iris.Context) {
 		tokens := BASE64EncodeStr(tmp)
 		log.Println(tokens)
 		if tokens == jsons.Token {
-			toks := Redis_()
+			toks := "ok"  //Redis_()
 			apimsg = toks //"验证通过"
 			apicode = 0
 			data = "success"
@@ -185,36 +186,36 @@ func ApiTest(ctx iris.Context) {
 
 func run() {
 	app := iris.New()
-	app.Get("/test", test)
-	app.Post("/v1/StsToken", StsToken)
-	app.Post("/v2/StsToken_v1", ApiTest)
-	app.Post("/v2/StsToken", StsToken_v2)
+	app.Get("/", test)
+	// app.Post("/v1/StsToken", StsToken)
+	// app.Post("/v2/StsToken_v1", ApiTest)
+	// app.Post("/v2/StsToken", StsToken_v2)
 	// 绑定端口并启动服务.
-	app.Run(iris.Addr("0.0.0.0:8082"))
+	app.Run(iris.Addr("0.0.0.0:80"))
 }
 
-func Redis_() string {
-	conn, err := redis.Dial("tcp", "192.168.248.126:6379")
-	if err != nil {
-		fmt.Println("connect redis error :", err)
-		return "connect redis error"
-	}
+// func Redis_() string {
+// 	conn, err := redis.Dial("tcp", "192.168.248.126:6379")
+// 	if err != nil {
+// 		fmt.Println("connect redis error :", err)
+// 		return "connect redis error"
+// 	}
 
-	name, err := redis.String(conn.Do("GET", "name"))
-	if err != nil {
-	}
-	if len(name) > 0 {
+// 	name, err := redis.String(conn.Do("GET", "name"))
+// 	if err != nil {
+// 	}
+// 	if len(name) > 0 {
 
-	} else {
-		times := strconv.FormatInt(time.Now().Unix(), 10)
-		conn.Do("SET", "name", times)
-		conn.Do("expire", "name", 50)
-		fmt.Println("set redis")
-		name = times
-	}
-	defer conn.Close()
-	return name
-}
+// 	} else {
+// 		times := strconv.FormatInt(time.Now().Unix(), 10)
+// 		conn.Do("SET", "name", times)
+// 		conn.Do("expire", "name", 50)
+// 		fmt.Println("set redis")
+// 		name = times
+// 	}
+// 	defer conn.Close()
+// 	return name
+// }
 
 func main() {
 	run()

@@ -20,7 +20,7 @@ func (c *MainController) Get() {
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
 	c.Ctx.ResponseWriter.WriteHeader(200)
-	c.Data["json"] = Response{200, "success.", "ok"}
+	c.Data["json"] = Response{200, "success.beego", "ok"}
 	c.ServeJSON()
 }
 
